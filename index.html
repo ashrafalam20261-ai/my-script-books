@@ -1,1 +1,54 @@
-CREATE FILE
+CREA<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Script Book</title>
+<style>
+body{margin:0;background:#11151e;color:white;font:16px Arial;padding:16px}
+h2{color:#a8f0d1}
+input,textarea,button{box-sizing:border-box;width:100%;padding:12px;margin:6px 0;border-radius:9px;border:1px solid #394252;background:#202735;color:white}
+textarea{height:42vh;line-height:1.6}
+button{background:#a8f0d1;color:#10231c;font-weight:bold}
+.note{padding:12px;background:#202735;margin:8px 0;border-radius:9px}
+</style>
+</head>
+<body>
+<h2>📚 My Script Book</h2>
+<input id="title" placeholder="स्क्रिप्ट का नाम">
+<input id="search" placeholder="स्क्रिप्ट खोजें">
+<textarea id="body" placeholder="यहाँ स्क्रिप्ट लिखें..."></textarea>
+<button onclick="save()">सेव करें</button>
+<button onclick="png()">PNG Export</button>
+<div id="notes"></div>
+<script>
+let notes=JSON.parse(localStorage.getItem('scripts')||'[]');
+function save(){
+let t=document.getElementById('title').value;
+let b=document.getElementById('body').value;
+if(!t.trim()){alert('नाम लिखें');return}
+notes.unshift({t,b});
+localStorage.setItem('scripts',JSON.stringify(notes));
+render();alert('नोट सेव हो गया');
+}
+function render(){
+let q=document.getElementById('search').value.toLowerCase();
+document.getElementById('notes').innerHTML=notes
+.filter(n=>(n.t+n.b).toLowerCase().includes(q))
+.map((n,i)=>'<div class="note"><b>'+esc(n.t)+'</b><br><button onclick="openNote('+i+')">खोलें</button></div>').join('');
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function openNote(i){title.value=notes[i].t;body.value=notes[i].b}
+function png(){
+let c=document.createElement('canvas'),x=c.getContext('2d');
+c.width=900;c.height=1100;x.fillStyle='#11151e';x.fillRect(0,0,900,1100);
+x.fillStyle='#a8f0d1';x.font='bold 36px sans-serif';x.fillText(title.value||'My Script',40,65);
+x.fillStyle='white';x.font='24px sans-serif';
+let lines=(body.value||'').split('\n'),y=120;
+lines.forEach(line=>{if(y<1050){x.fillText(line.slice(0,55),40,y);y+=36}});
+let a=document.createElement('a');a.download='script.png';a.href=c.toDataURL('image/png');a.click();
+}
+search.oninput=render;render();
+</script>
+</body>
+</html>TE FILE
